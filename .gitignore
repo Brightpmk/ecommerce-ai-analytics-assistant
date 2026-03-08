@@ -1,0 +1,15 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+app.log
+.streamlit/
+.idea/
+.vscode/
+.DS_Store
+data/raw/
+data/processed/
+logs/
+*.csv
