@@ -236,7 +236,7 @@ This dataset enables realistic analytics scenarios including:
 Clone the repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/ecommerce-ai-analytics-assistant.git
+git clone https://github.com/Brightpmk/ecommerce-ai-analytics-assistant.git
 cd ecommerce-ai-analytics-assistant
 ```
 
