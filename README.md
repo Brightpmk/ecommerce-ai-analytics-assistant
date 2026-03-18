@@ -7,9 +7,9 @@
 ![SQL](https://img.shields.io/badge/SQL-Analytics-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-AI-powered analytics assistant that converts **natural language business questions into safe SQL queries**, executes them on a **PostgreSQL analytics database**, and returns **tables, charts, and concise business insights**.
+AI-powered analytics assistant that converts **natural language business questions into SQL queries**, validates them for safety at the application layer, executes them on a **PostgreSQL analytics database**, and returns **tables, charts, and concise business insights**.
 
-The project demonstrates how **Large Language Models (LLMs)** can be integrated into real **data analytics workflows** while maintaining **SQL safety guardrails**, **structured data pipelines**, and a **clean modular architecture**.
+The project demonstrates how **Large Language Models (LLMs)** can be integrated into real **data analytics workflows** while maintaining **SQL safety guardrails** and a **clean modular application architecture**.
 
 ---
 
@@ -26,9 +26,9 @@ Instead of writing SQL manually, users can ask questions such as:
 - Which states have the most customers?
 - What are the most common payment types?
 
-The system automatically converts these questions into SQL, runs them safely, and returns insights.
+The system automatically converts these questions into SQL, validates them, executes them, and returns insights.
 
-This project effectively functions as a **mini AI-powered Business Intelligence system**.
+This project functions as a **mini AI-powered Business Intelligence system**.
 
 ---
 
@@ -61,23 +61,11 @@ Blocked SQL operations include:
 - TRUNCATE
 - Multiple SQL statements
 
-Only **SELECT queries** are allowed.
+Only **SELECT-style analytical queries** are allowed.
 
-Example blocked request:
+Unsafe questions are blocked before SQL generation, and unsafe generated SQL is rejected before execution.
 
-User request:
-
-```
-Write SQL that deletes all rows from orders
-```
-
-Safe system response:
-
-```
-SELECT 'This operation is not allowed as per the guidelines.' AS message;
-```
-
-This ensures that the analytics database remains **read-only and protected from modification**.
+This enforces **read-only analytics behavior at the application layer**.
 
 ---
 
@@ -90,17 +78,14 @@ The system automatically generates charts when query results match common analyt
 | Time series | Line chart |
 | Category + metric | Bar chart |
 
-This allows users to quickly interpret trends without manually creating visualizations.
-
 ---
 
 ## Business Insight Generation
 
 After executing a query, the system generates **short natural-language summaries** describing the results.
 
-Example insight:
-
-> "The monthly revenue trend shows steady growth during early 2017 followed by stronger expansion later in the year, indicating increasing marketplace demand."
+- Uses LLM when API key is available  
+- Falls back to simple rule-based summaries if not  
 
 ---
 
@@ -118,7 +103,7 @@ Example insight:
 6. Results load into a pandas DataFrame  
 7. Chart Builder attempts automatic visualization  
 8. Insight Generator summarizes the results  
-9. Streamlit renders tables, charts, and insights
+9. Streamlit renders tables, charts, and insights  
 
 ---
 
@@ -162,7 +147,7 @@ Example insight:
 | Language | Python |
 | Database | PostgreSQL |
 | Data Processing | pandas |
-| SQL Access | SQLAlchemy |
+| SQL Access | SQLAlchemy + pandas |
 | Visualization | Plotly |
 | LLM Integration | OpenAI API |
 | Environment | python-dotenv |
@@ -176,35 +161,14 @@ Example insight:
 ecommerce-ai-analytics-assistant
 │
 ├── app
-│   ├── main.py
-│   ├── config.py
-│   ├── db.py
-│   ├── llm.py
-│   ├── prompt_builder.py
-│   ├── validator.py
-│   ├── analytics.py
-│   ├── charts.py
-│   ├── insights.py
-│   └── utils.py
-│
 ├── scripts
-│   ├── load_csvs.py
-│   ├── inspect_data.py
-│   └── check_*.py
-│
 ├── sql
-│   ├── create_tables.sql
-│   └── sample_queries.sql
-│
 ├── tests
-│   └── test_validator.py
-│
 ├── docs
-│   ├── architecture_diagram.png
-│   └── screenshots
-│
+├── data
+│   └── raw
+│       └── *.csv
 ├── requirements.txt
-├── pytest.ini
 └── README.md
 ```
 
@@ -212,55 +176,44 @@ ecommerce-ai-analytics-assistant
 
 # Dataset
 
-The system uses the **Olist Brazilian E-commerce dataset**, which contains real marketplace transactions.
+The current implementation uses a **subset of the Olist Brazilian E-commerce dataset**, including:
 
-Included data entities:
+- customers  
+- orders  
+- order items  
+- order payments  
+- products  
+- product category translation  
 
-- customers
-- orders
-- order items
-- payments
-- products
+This supports analytics such as:
 
-This dataset enables realistic analytics scenarios including:
-
-- revenue analysis
-- category performance
-- customer behavior analysis
-- logistics performance
+- revenue trends  
+- category performance  
+- customer distribution  
+- payment behavior  
 
 ---
 
 # Installation
-
-Clone the repository
 
 ```
 git clone https://github.com/YOUR_USERNAME/ecommerce-ai-analytics-assistant.git
 cd ecommerce-ai-analytics-assistant
 ```
 
-Create virtual environment
-
 ```
 python -m venv venv
 ```
 
-Activate environment
-
 Mac/Linux
-
 ```
 source venv/bin/activate
 ```
 
 Windows
-
 ```
 venv\Scripts\activate
 ```
-
-Install dependencies
 
 ```
 pip install -r requirements.txt
@@ -313,19 +266,15 @@ python scripts/load_csvs.py
 python -m streamlit run app/main.py
 ```
 
-The Streamlit interface will launch in your browser.
-
 ---
 
 # Testing
-
-Run automated tests:
 
 ```
 pytest
 ```
 
-Tests validate the **SQL safety validator** to ensure destructive queries are blocked.
+Tests currently focus on SQL validation logic.
 
 ---
 
@@ -339,28 +288,23 @@ Tests validate the **SQL safety validator** to ensure destructive queries are bl
 
 ---
 
-# Future Improvements
+# Current Limitations
 
-Possible extensions:
-
-- query caching
-- SQL explanation for generated queries
-- additional chart types
-- persistent query history
-- semantic schema descriptions
-- role-based query permissions
+- Only a subset of the Olist dataset is used  
+- SQL safety is enforced at the application layer (not DB-level permissions)  
+- CSV loader appends data (may duplicate if rerun without clearing tables)  
+- Test coverage is limited to validator logic  
+- Chart selection is heuristic-based  
 
 ---
 
 # Learning Goals
 
-This project demonstrates practical experience with:
-
-- LLM integration in analytics systems
-- natural language to SQL workflows
-- SQL safety validation
-- interactive analytics applications
-- modern data application architecture
+- LLM + SQL integration  
+- Natural language analytics systems  
+- SQL validation design  
+- Data app architecture  
+- Interactive BI-style interfaces  
 
 ---
 
