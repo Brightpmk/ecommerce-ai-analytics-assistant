@@ -197,7 +197,7 @@ This supports analytics such as:
 # Installation
 
 ```
-git clone https://github.com/YOUR_USERNAME/ecommerce-ai-analytics-assistant.git
+git clone https://github.com/Brightpmk/ecommerce-ai-analytics-assistant.git
 cd ecommerce-ai-analytics-assistant
 ```
 
