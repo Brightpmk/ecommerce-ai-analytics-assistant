@@ -5,7 +5,7 @@ import streamlit as st
 from app.analytics import coerce_datetime_columns, dataframe_summary, format_dataframe
 from app.charts import build_chart
 from app.db import run_select_query, test_connection
-from app.insights import generate_insight
+from app.insights import generate_basic_insight, generate_insight
 from app.llm import generate_sql
 from app.utils import setup_logging
 from app.validator import validate_sql, validate_user_question
@@ -90,56 +90,65 @@ def main() -> None:
             logging.warning("Blocked unsafe question: %s", user_question)
             return
 
-        try:
-            logging.info("User question: %s", user_question)
+        logging.info("User question: %s", user_question)
 
+        try:
             with st.spinner("Generating SQL..."):
                 sql = generate_sql(user_question)
+        except Exception:
+            logging.exception("SQL generation failed.")
+            st.error("Failed to generate SQL from your question.")
+            return
 
-            st.subheader("Generated SQL")
-            st.code(sql, language="sql")
-            logging.info("Generated SQL: %s", sql)
+        st.subheader("Generated SQL")
+        st.code(sql, language="sql")
+        logging.info("Generated SQL: %s", sql)
 
-            is_valid, validation_message = validate_sql(sql)
-            if not is_valid:
-                st.error(f"SQL validation failed: {validation_message}")
-                logging.warning("Validation failed: %s", validation_message)
-                return
+        is_valid, validation_message = validate_sql(sql)
+        if not is_valid:
+            st.error(f"SQL validation failed: {validation_message}")
+            logging.warning("Validation failed: %s", validation_message)
+            return
 
-            st.success("SQL validation passed.")
+        st.success("SQL validation passed.")
 
+        try:
             with st.spinner("Running query..."):
                 df = run_select_query(sql)
+        except Exception:
+            logging.exception("Database query failed.")
+            st.error("Database query failed while processing your request.")
+            return
 
-            df = coerce_datetime_columns(df)
-            df = format_dataframe(df)
-            summary = dataframe_summary(df)
+        df = coerce_datetime_columns(df)
+        df = format_dataframe(df)
+        summary = dataframe_summary(df)
 
-            add_to_history(user_question)
+        add_to_history(user_question)
 
-            st.subheader("Results")
-            st.dataframe(df, use_container_width=True)
-            st.caption(
-                f"Rows: {summary['row_count']} | Columns: {summary['column_count']}"
-            )
+        st.subheader("Results")
+        st.dataframe(df, use_container_width=True)
+        st.caption(
+            f"Rows: {summary['row_count']} | Columns: {summary['column_count']}"
+        )
 
-            chart = build_chart(df)
-            if chart is not None:
-                st.subheader("Chart")
-                st.plotly_chart(chart, use_container_width=True)
+        chart = build_chart(df)
+        if chart is not None:
+            st.subheader("Chart")
+            st.plotly_chart(chart, use_container_width=True)
 
+        try:
             with st.spinner("Generating business insight..."):
                 insight = generate_insight(user_question, df)
-
-            st.subheader("Business Insight")
-            st.write(insight)
-
-            logging.info("Returned rows: %s", len(df))
-            logging.info("Analysis completed successfully.")
-
         except Exception:
-            logging.exception("Application error occurred.")
-            st.error("An unexpected error occurred while processing your request.")
+            logging.exception("Insight stage failed unexpectedly.")
+            insight = generate_basic_insight(df)
+
+        st.subheader("Business Insight")
+        st.write(insight)
+
+        logging.info("Returned rows: %s", len(df))
+        logging.info("Analysis completed successfully.")
 
 
 if __name__ == "__main__":
