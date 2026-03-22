@@ -71,7 +71,11 @@ def contains_forbidden_keywords(sql: str) -> bool:
 
 
 def contains_select_into(sql: str) -> bool:
-    return re.search(r"\bselect\b.*\binto\b", sql, flags=re.IGNORECASE | re.DOTALL) is not None
+    return re.search(
+        r"\bselect\b.*\binto\b",
+        sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ) is not None
 
 
 def contains_forbidden_system_access(sql: str) -> bool:
@@ -95,15 +99,44 @@ def extract_table_names(sql: str) -> list[str]:
     return from_tables + join_tables
 
 
+def extract_cte_names(sql: str) -> set[str]:
+    cte_names = set()
+
+    # จับทั้ง WITH x AS (...) และ , y AS (...)
+    matches = re.findall(
+        r"(?:\bwith\b|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s+as\s*\(",
+        sql,
+        flags=re.IGNORECASE,
+    )
+
+    for name in matches:
+        cte_names.add(name.lower())
+
+    return cte_names
+
+
 def uses_only_allowed_tables(sql: str) -> tuple[bool, str]:
     table_names = extract_table_names(sql)
+    cte_names = extract_cte_names(sql)
 
     if not table_names:
         return False, "SQL must reference at least one allowed table."
 
+    real_table_found = False
+
     for table in table_names:
-        if table.lower() not in ALLOWED_TABLES:
+        table_lower = table.lower()
+
+        if table_lower in cte_names:
+            continue
+
+        if table_lower not in ALLOWED_TABLES:
             return False, f"Table '{table}' is not allowed."
+
+        real_table_found = True
+
+    if not real_table_found:
+        return False, "SQL must reference at least one allowed base table."
 
     return True, "All referenced tables are allowed."
 
