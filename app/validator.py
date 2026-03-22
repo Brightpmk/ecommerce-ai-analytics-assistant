@@ -26,6 +26,23 @@ FORBIDDEN_QUESTION_PATTERNS = [
     r"\bwrite sql that deletes\b",
 ]
 
+FORBIDDEN_SYSTEM_PATTERNS = [
+    r"\binformation_schema\b",
+    r"\bpg_catalog\b",
+    r"\bpg_tables\b",
+    r"\bpg_class\b",
+    r"\bpg_attribute\b",
+    r"\bpg_indexes\b",
+]
+
+ALLOWED_TABLES = {
+    "customers",
+    "orders",
+    "order_items",
+    "products",
+    "payments",
+}
+
 
 def normalize_sql(sql: str) -> str:
     return sql.strip()
@@ -53,6 +70,44 @@ def contains_forbidden_keywords(sql: str) -> bool:
     return False
 
 
+def contains_select_into(sql: str) -> bool:
+    return re.search(r"\bselect\b.*\binto\b", sql, flags=re.IGNORECASE | re.DOTALL) is not None
+
+
+def contains_forbidden_system_access(sql: str) -> bool:
+    for pattern in FORBIDDEN_SYSTEM_PATTERNS:
+        if re.search(pattern, sql, flags=re.IGNORECASE):
+            return True
+    return False
+
+
+def extract_table_names(sql: str) -> list[str]:
+    from_tables = re.findall(
+        r"\bfrom\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+        sql,
+        flags=re.IGNORECASE,
+    )
+    join_tables = re.findall(
+        r"\bjoin\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+        sql,
+        flags=re.IGNORECASE,
+    )
+    return from_tables + join_tables
+
+
+def uses_only_allowed_tables(sql: str) -> tuple[bool, str]:
+    table_names = extract_table_names(sql)
+
+    if not table_names:
+        return False, "SQL must reference at least one allowed table."
+
+    for table in table_names:
+        if table.lower() not in ALLOWED_TABLES:
+            return False, f"Table '{table}' is not allowed."
+
+    return True, "All referenced tables are allowed."
+
+
 def validate_sql(sql: str) -> tuple[bool, str]:
     sql = normalize_sql(sql)
 
@@ -67,6 +122,16 @@ def validate_sql(sql: str) -> tuple[bool, str]:
 
     if contains_forbidden_keywords(sql):
         return False, "SQL contains forbidden keywords."
+
+    if contains_select_into(sql):
+        return False, "SELECT INTO is not allowed."
+
+    if contains_forbidden_system_access(sql):
+        return False, "Access to system tables is not allowed."
+
+    allowed_tables_ok, allowed_tables_message = uses_only_allowed_tables(sql)
+    if not allowed_tables_ok:
+        return False, allowed_tables_message
 
     return True, "SQL is valid."
 
