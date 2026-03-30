@@ -67,6 +67,8 @@ Unsafe questions are blocked before SQL generation, and unsafe generated SQL is 
 
 This enforces **read-only analytics behavior at the application layer**.
 
+The app now uses a **shared schema contract** between prompt generation and SQL validation to reduce drift and prevent valid analytics tables from being rejected.
+
 ---
 
 ## Automatic Data Visualization
@@ -86,6 +88,14 @@ After executing a query, the system generates **short natural-language summaries
 
 - Uses LLM when API key is available  
 - Falls back to simple rule-based summaries if not  
+
+---
+
+## Schema Profiling (v2)
+
+The app now includes a schema profiling layer (`app/schema_profiler.py`) that can infer column types, ID-like columns, target-like columns, date/time fields, and likely table relationships from one or multiple datasets.  
+This structured metadata is designed for downstream analytics and LLM orchestration.  
+See `docs/schema_profiling.md` for details.
 
 ---
 

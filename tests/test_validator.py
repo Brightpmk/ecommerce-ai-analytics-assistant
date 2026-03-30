@@ -23,3 +23,21 @@ def test_multiple_statements_rejected():
 def test_empty_sql_rejected():
     ok, _ = validate_sql("")
     assert ok is False
+
+
+def test_order_payments_table_allowed():
+    ok, _ = validate_sql("SELECT payment_type, SUM(payment_value) FROM order_payments GROUP BY payment_type")
+    assert ok is True
+
+
+def test_product_category_translation_table_allowed():
+    ok, _ = validate_sql(
+        """
+        SELECT pct.product_category_name_english, COUNT(*) AS product_count
+        FROM products p
+        JOIN product_category_translation pct
+          ON p.product_category_name = pct.product_category_name
+        GROUP BY pct.product_category_name_english
+        """
+    )
+    assert ok is True

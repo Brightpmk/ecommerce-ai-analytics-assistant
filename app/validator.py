@@ -1,5 +1,7 @@
 import re
 
+from app.schema import ALLOWED_TABLES
+
 FORBIDDEN_KEYWORDS = [
     "INSERT",
     "UPDATE",
@@ -34,15 +36,6 @@ FORBIDDEN_SYSTEM_PATTERNS = [
     r"\bpg_attribute\b",
     r"\bpg_indexes\b",
 ]
-
-ALLOWED_TABLES = {
-    "customers",
-    "orders",
-    "order_items",
-    "products",
-    "payments",
-}
-
 
 def normalize_sql(sql: str) -> str:
     return sql.strip()
