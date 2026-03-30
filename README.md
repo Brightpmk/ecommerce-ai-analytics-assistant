@@ -67,6 +67,8 @@ Unsafe questions are blocked before SQL generation, and unsafe generated SQL is 
 
 This enforces **read-only analytics behavior at the application layer**.
 
+The app now uses a **shared schema contract** between prompt generation and SQL validation to reduce drift and prevent valid analytics tables from being rejected.
+
 ---
 
 ## Automatic Data Visualization
