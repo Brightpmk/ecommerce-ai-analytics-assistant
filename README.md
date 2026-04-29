@@ -1,4 +1,9 @@
-# AI Analytics Assistant for E-commerce
+# AI Analytics Assistant for E-commerce (ARCHIVED)
+
+> [!IMPORTANT]
+> **This project has been MERGED into a new unified platform.**
+>
+> This repository is now archived. The functionality of this project (NL-to-SQL, safety guardrails, and AI insights) has been combined with others to create the [**Olist E-commerce Analytics Platform**](../mix/olist-ecommerce-platform/README.md).
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
@@ -97,6 +102,45 @@ The app now includes a schema profiling layer (`app/schema_profiler.py`) that ca
 This structured metadata is designed for downstream analytics and LLM orchestration.  
 See `docs/schema_profiling.md` for details.
 
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+## Automatic Join Suggestions (v2)
+
+For multiple datasets, the app can suggest likely joins using column-name similarity, uniqueness/cardinality, key overlap, and e-commerce key semantics.  
+Each suggestion includes confidence and a SQL-style `ON` recommendation.  
+See `docs/join_suggestions.md`.
+
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 ---
 
 # System Architecture
