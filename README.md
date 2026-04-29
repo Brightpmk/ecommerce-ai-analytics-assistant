@@ -102,45 +102,11 @@ The app now includes a schema profiling layer (`app/schema_profiler.py`) that ca
 This structured metadata is designed for downstream analytics and LLM orchestration.  
 See `docs/schema_profiling.md` for details.
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 ## Automatic Join Suggestions (v2)
 
 For multiple datasets, the app can suggest likely joins using column-name similarity, uniqueness/cardinality, key overlap, and e-commerce key semantics.  
 Each suggestion includes confidence and a SQL-style `ON` recommendation.  
 See `docs/join_suggestions.md`.
-
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 ---
 
 # System Architecture
